@@ -1,4 +1,5 @@
 export const maxDuration = 60;
+export const preferredRegion = "sfo1";
 
 import { planPayouts, writeNotes } from "@/lib/explain";
 import { evaluate } from "@/lib/policy";
