@@ -22,6 +22,17 @@ const nextUtcMidnight = () => {
 };
 export const llmResting = () => Date.now() < restingUntil;
 
+/** Per instance daily cap so a public demo cannot drain the shared free quota. */
+const DAILY_CAP = Number(process.env.SETTLE_LLM_CALLS_PER_DAY ?? 30);
+let used = { day: "", count: 0 };
+function takeCall(): boolean {
+  const day = new Date().toISOString().slice(0, 10);
+  if (used.day !== day) used = { day, count: 0 };
+  if (used.count >= DAILY_CAP) return false;
+  used.count += 1;
+  return true;
+}
+
 /** House style: no em or en dashes in anything a model writes. */
 export function tidy(s: string): string {
   return s
@@ -47,6 +58,7 @@ export async function chatJson(
   if (hit) return { ...hit, cached: true };
   if (!llmEnabled()) throw new Error("no model key");
   if (llmResting()) throw new Error("free daily model quota used up");
+  if (!takeCall()) throw new Error("demo daily model cap reached");
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
