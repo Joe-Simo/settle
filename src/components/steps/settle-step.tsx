@@ -45,6 +45,7 @@ export function SettleStep(props: StepProps & { result: SettleResult | null; set
     () => [
       { headerName: "Payee", field: "name", pinned: "left", width: 150, cellClass: "font-semibold" },
       { headerName: "Role", field: "role", width: 130 },
+      { headerName: "Kind", field: "kind", hide: true },
       { headerName: "Deal", field: "dealLabel", flex: 1, minWidth: 170 },
       {
         headerName: "Result",
@@ -87,8 +88,8 @@ export function SettleStep(props: StepProps & { result: SettleResult | null; set
     const a = gridApi.current;
     if (!a) return;
     a.setFilterModel(null);
-    if (name === "acts") a.setFilterModel({ role: { filterType: "text", type: "contains", filter: "er" } });
-    if (name === "crew") a.setFilterModel({ role: { filterType: "text", type: "notContains", filter: "er" } });
+    if (name === "acts") a.setFilterModel({ kind: { filterType: "text", type: "equals", filter: "act" } });
+    if (name === "crew") a.setFilterModel({ kind: { filterType: "text", type: "equals", filter: "staff" } });
     if (name === "biggest") a.applyColumnState({ state: [{ colId: "dueCents", sort: "desc" }], defaultState: { sort: null } });
     if (name === "backend") a.setFilterModel({ outcome: { filterType: "text", type: "equals", filter: "backend" } });
   };
