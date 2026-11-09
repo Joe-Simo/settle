@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { fmtShort } from "@/lib/money";
 import type { Order } from "@/lib/schema";
 import type { Settlement } from "@/lib/settle";
+import { salesByDay, waterfallRows } from "@/lib/chart-data";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -17,21 +18,7 @@ const theme = {
 
 /** Money waterfall built from stacked community bars: an invisible base plus up, down and total segments. */
 export function WaterfallChart({ s }: { s: Settlement }) {
-  const data = useMemo(() => {
-    let running = 0;
-    return s.waterfall
-      .filter((w, i) => i === 0 || i === s.waterfall.length - 1 || w.amountCents !== 0)
-      .map((w, i, arr) => {
-        const v = w.amountCents / 100;
-        if (i === 0 || i === arr.length - 1) {
-          running = v;
-          return { label: w.label, base: 0, up: 0, down: 0, total: v };
-        }
-        const base = v >= 0 ? running : running + v;
-        running += v;
-        return { label: w.label, base, up: v > 0 ? v : 0, down: v < 0 ? -v : 0, total: 0 };
-      });
-  }, [s]);
+  const data = useMemo(() => waterfallRows(s), [s]);
   const options = {
     theme,
     data,
@@ -57,23 +44,7 @@ export function PayeeDonut({ s }: { s: Settlement }) {
 }
 
 export function SalesChart({ orders }: { orders: Order[] }) {
-  const data = useMemo(() => {
-    const done = orders.filter((o) => o.status === "COMPLETED").sort((a, b) => a.at.localeCompare(b.at));
-    const byDay = new Map<string, { adv: number; door: number; paypal: number }>();
-    for (const o of done) {
-      const day = o.at.slice(0, 10);
-      const row = byDay.get(day) ?? { adv: 0, door: 0, paypal: 0 };
-      if (o.source === "paypal") row.paypal += o.qty;
-      else if (o.tierId === "door") row.door += o.qty;
-      else row.adv += o.qty;
-      byDay.set(day, row);
-    }
-    let cum = 0;
-    return [...byDay.entries()].map(([day, r]) => {
-      cum += r.adv + r.door + r.paypal;
-      return { day: new Date(`${day}T12:00:00Z`), ...r, cum };
-    });
-  }, [orders]);
+  const data = useMemo(() => salesByDay(orders), [orders]);
   const options = {
     theme,
     data,

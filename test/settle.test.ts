@@ -112,3 +112,19 @@ describe("settle: deal types", () => {
     expect(s.ticketsSold).toBe(382);
   });
 });
+
+describe("chart data", async () => {
+  const { waterfallRows, salesByDay } = await import("@/lib/chart-data");
+  it("builds a waterfall that ends at promoter net and never floats below zero", () => {
+    const rows = waterfallRows(settle(demoShow()));
+    expect(rows[0]).toMatchObject({ label: "Gross", total: 9080 });
+    expect(rows.at(-1)).toMatchObject({ label: "Promoter net", total: 1097 });
+    expect(rows.every((r) => r.base >= 0)).toBe(true);
+    const talent = rows.find((r) => r.label === "Talent")!;
+    expect(talent.down).toBe(5604);
+  });
+  it("buckets completed sales by day", () => {
+    const days = salesByDay(demoOrders());
+    expect(days.reduce((a, d) => a + d.adv + d.door + d.paypal, 0)).toBe(380);
+  });
+});
