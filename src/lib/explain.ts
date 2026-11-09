@@ -153,7 +153,7 @@ export function checkPlan(raw: unknown, s: Settlement, policy: PolicyResult): { 
 export async function planPayouts(s: Settlement, policy: PolicyResult): Promise<Plan> {
   const base = rulePlan(s, policy);
   if (!llmEnabled()) return base;
-  const system = `You are Settle, a payments agent closing out a concert. Tools you may plan (you do not execute them):
+  const system = `You are Settle, a payments agent closing out a concert. Payees are acts and crew, call them people. Tools you may plan (you do not execute them):
 - pay_batch {payeeIds}: one PayPal Payouts batch. Only payees listed as payable.
 - hold {payeeId, why}: do not pay tonight.
 - send_invoice {to:"bar"}: PayPal invoice to the venue for the promoter's bar split.
