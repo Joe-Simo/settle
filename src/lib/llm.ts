@@ -79,20 +79,27 @@ export async function chatJson(
         { role: "user", content: user },
       ],
     }),
-    signal: AbortSignal.timeout(opts.timeoutMs ?? 25_000),
+    signal: AbortSignal.timeout(opts.timeoutMs ?? 20_000),
   }).catch(() => new Response("timeout", { status: 504 }));
   // Try each model in turn on upstream errors, timeouts and per-model rate limits.
   const models = LLM_MODELS.slice(0, 3);
-  let res = await send(models[0]);
+  const tried: string[] = [];
+  const attempt = async (model: string) => {
+    const t = Date.now();
+    const r = await send(model);
+    tried.push(`${model.split("/").pop()} ${r.status === 504 && Date.now() - t >= 20_000 ? "timeout" : r.status}`);
+    return r;
+  };
+  let res = await attempt(models[0]);
   for (const next of models.slice(1)) {
     if (![404, 429, 502, 503, 504].includes(res.status)) break;
     if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(await res.clone().text())) break;
-    res = await send(next);
+    res = await attempt(next);
   }
   const text = await res.text();
   if (!res.ok) {
     if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(text)) restingUntil = nextUtcMidnight();
-    throw new Error(`OpenRouter ${res.status}`);
+    throw new Error(`OpenRouter: ${tried.join(", ")}`);
   }
   const data = JSON.parse(text) as { model?: string; error?: { message?: string }; choices?: { message?: { content?: string | null } }[] };
   if (data.error) throw new Error(`OpenRouter error: ${data.error.message ?? "unknown"}`);
