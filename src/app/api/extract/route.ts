@@ -1,5 +1,4 @@
 export const maxDuration = 60;
-export const preferredRegion = "sfo1";
 
 import { extractDeal } from "@/lib/extract";
 import { limited, tooMany } from "@/lib/ratelimit";
