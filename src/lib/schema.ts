@@ -75,8 +75,8 @@ export type TicketTier = z.infer<typeof TicketTier>;
 
 export const Order = z.object({
   id: z.string().min(1),
-  /** paypal = a real Checkout order (verified with the Orders API); boxoffice = cash or other, declared by the promoter. */
-  source: z.enum(["paypal", "boxoffice"]),
+  /** paypal = a real Checkout order (verified with the Orders API); boxoffice = cash at the door, declared by the promoter; simulated = labeled demo crowd. */
+  source: z.enum(["paypal", "boxoffice", "simulated"]),
   tierId: z.string().min(1),
   qty: z.number().int().positive(),
   amountCents: cents,
