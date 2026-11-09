@@ -25,11 +25,16 @@
     "vitest": "5.0.5"
   },
   "dependencies": {
+    "ag-charts-community": "^14.3.0",
+    "ag-charts-react": "^14.3.0",
+    "ag-grid-community": "^36.3.0",
+    "ag-grid-react": "^36.3.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.64.0",
     "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "tailwind-merge": "^3.7.0"
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.7"
   }
 }
