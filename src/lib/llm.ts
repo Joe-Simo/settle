@@ -6,7 +6,7 @@ import { createHash } from "node:crypto";
  */
 export const LLM_MODELS = (
   process.env.SETTLE_LLM_MODELS ??
-  "nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-31b-it:free,nvidia/nemotron-3-super-120b-a12b:free"
+  "nvidia/nemotron-3-ultra-550b-a55b:free,nvidia/nemotron-3.5-super-vl:free,google/gemma-4-31b-it:free"
 )
   .split(",")
   .map((s) => s.trim())
@@ -59,7 +59,7 @@ export async function chatJson(
   if (!llmEnabled()) throw new Error("no model key");
   if (llmResting()) throw new Error("free daily model quota used up");
   if (!takeCall()) throw new Error("demo daily model cap reached");
-  const send = () =>
+  const send = (model: string) =>
     fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -69,8 +69,7 @@ export async function chatJson(
       "X-Title": "Settle",
     },
     body: JSON.stringify({
-      model: LLM_MODELS[0],
-      models: LLM_MODELS.slice(0, 3),
+      model,
       temperature: 0.1,
       max_tokens: opts.maxTokens ?? 4000,
       reasoning: { effort: "low" },
@@ -80,10 +79,16 @@ export async function chatJson(
         { role: "user", content: user },
       ],
     }),
-    signal: AbortSignal.timeout(opts.timeoutMs ?? 40_000),
-  });
-  let res = await send();
-  if ([502, 503, 504].includes(res.status)) res = await send();
+    signal: AbortSignal.timeout(opts.timeoutMs ?? 25_000),
+  }).catch(() => new Response("timeout", { status: 504 }));
+  // Try each model in turn on upstream errors, timeouts and per-model rate limits.
+  const models = LLM_MODELS.slice(0, 3);
+  let res = await send(models[0]);
+  for (const next of models.slice(1)) {
+    if (![404, 429, 502, 503, 504].includes(res.status)) break;
+    if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(await res.clone().text())) break;
+    res = await send(next);
+  }
   const text = await res.text();
   if (!res.ok) {
     if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(text)) restingUntil = nextUtcMidnight();

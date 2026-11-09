@@ -38,7 +38,7 @@ All calls go to `api-m.sandbox.paypal.com`. Live PayPal is never used.
 
 | AI piece | Model | What it does | Guardrail |
 | --- | --- | --- | --- |
-| Deal memo extraction | Free open models on OpenRouter (default `nvidia/nemotron-3-ultra-550b-a55b:free`, fallbacks `google/gemma-4-31b-it:free`, `nvidia/nemotron-3-super-120b-a12b:free`) | Email to structured deal terms with source quotes | zod schema; quotes must be in the email; figures must appear in the email; rule parser fallback |
+| Deal memo extraction | Free open models on OpenRouter (default `nvidia/nemotron-3-ultra-550b-a55b:free`, fallbacks `nvidia/nemotron-3.5-super-vl:free`, `google/gemma-4-31b-it:free`, tried in turn) | Email to structured deal terms with source quotes | zod schema; quotes must be in the email; figures must appear in the email; rule parser fallback |
 | Payee notes | same | Plain English note per payee | Every $ figure must exist in the computed settlement, otherwise template |
 | Payout plan | same | Chooses `pay_batch`, `hold`, `send_invoice` steps with reasons | Only policy-payable payees, no amounts from the model, unknown tools dropped, falls back to a rule plan if anyone is missed |
 

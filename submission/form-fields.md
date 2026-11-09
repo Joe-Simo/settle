@@ -65,7 +65,7 @@ Webhooks for payout status, settlement PDFs for each act, multi-show tours, and 
 Open https://settle-eight-khaki.vercel.app/show. No login. Step 1: click "Read the deal memo", then "Use these terms". Step 2: buy a ticket with the PayPal button. Step 3: click "Settle the show" and click any row to see the math and the AI note. Step 4: type a second approver name and click "Pay 6 people". The header shows whether PayPal is in sandbox or MOCK mode and which AI model ran. "Reset demo" restores the starting show. Run locally with the steps in the README.
 
 ## AI disclosure
-- Runtime AI: free open models on OpenRouter (default nvidia/nemotron-3-ultra-550b-a55b:free; fallbacks google/gemma-4-31b-it:free and nvidia/nemotron-3-super-120b-a12b:free) for deal memo extraction, payee notes and the payout plan.
+- Runtime AI: free open models on OpenRouter (default nvidia/nemotron-3-ultra-550b-a55b:free; fallbacks nvidia/nemotron-3.5-super-vl:free and google/gemma-4-31b-it:free) for deal memo extraction, payee notes and the payout plan.
 - Development: the project was built with AI coding assistance (an AI coding agent wrote much of the code and the text under human direction).
 - Video: the voiceover is a synthetic text-to-speech voice (Piper), disclosed on screen.
 - Demo data: all names are invented, and the advance ticket crowd is simulated and labeled as such.
