@@ -147,7 +147,7 @@ export async function extractDeal(memo: string): Promise<ExtractResult> {
   const text = memo.slice(0, 6000);
   if (llmEnabled()) {
     try {
-      const { json, model } = await chatJson("extract", SYSTEM, text, { maxTokens: 1500 });
+      const { json, model } = await chatJson("extract", SYSTEM, text, { maxTokens: 5000 });
       const parsed = ModelOut.parse(json);
       const acts = parsed.acts.map((a) => {
         const deal = Deal.parse({

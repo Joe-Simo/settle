@@ -59,7 +59,8 @@ export async function chatJson(
       model: LLM_MODELS[0],
       models: LLM_MODELS.slice(0, 3),
       temperature: 0.1,
-      max_tokens: opts.maxTokens ?? 1200,
+      max_tokens: opts.maxTokens ?? 4000,
+      reasoning: { effort: "low" },
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: system },

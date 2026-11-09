@@ -58,7 +58,7 @@ Write 2 or 3 short sentences per payee in plain English: what they earned and wh
 Use ONLY the dollar figures given in the facts or due fields. Do not do arithmetic. Do not use dashes as punctuation.
 Return JSON only: {"notes":{"<id>":"note"}} with one entry per id.`;
   try {
-    const { json, model } = await chatJson("notes", system, JSON.stringify({ show: showName, payees: payload }), { maxTokens: 1500 });
+    const { json, model } = await chatJson("notes", system, JSON.stringify({ show: showName, payees: payload }), { maxTokens: 4000 });
     const parsed = NotesOut.parse(json);
     const allowed = allowedFigures(s);
     const notes: Record<string, string> = {};
@@ -166,13 +166,15 @@ Never state an amount that is not given. Return JSON only: {"summary":"one sente
     barInvoice: s.barInvoice ? { venue: s.barInvoice.venueName, amount: fmtShort(s.barInvoice.amountCents) } : null,
   });
   try {
-    const { json, model } = await chatJson("plan", system, user, { maxTokens: 900 });
+    const { json, model } = await chatJson("plan", system, user, { maxTokens: 3000 });
     const checked = checkPlan(json, s, policy);
     const coversAll = policy.payable.every((p) => checked.steps.some((st) => st.tool === "pay_batch" && st.payeeIds.includes(p.payeeId)));
     if (!checked.steps.length || !coversAll) {
       return { ...base, rejected: [...checked.rejected, "model plan did not cover every payable person"] };
     }
-    return { steps: checked.steps, summary: checked.summary || base.summary, engine: "model", model, rejected: checked.rejected };
+    // Fill any empty reasons with the rule plan's plain reason for the same tool.
+    const steps = checked.steps.map((st) => (st.why ? st : { ...st, why: base.steps.find((b) => b.tool === st.tool)?.why ?? "" }));
+    return { steps, summary: checked.summary || base.summary, engine: "model", model, rejected: checked.rejected };
   } catch {
     return base;
   }
