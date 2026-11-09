@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { planPayouts, writeNotes } from "@/lib/explain";
 import { evaluate } from "@/lib/policy";
 import { limited, tooMany } from "@/lib/ratelimit";

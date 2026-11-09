@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+
 import { extractDeal } from "@/lib/extract";
 import { limited, tooMany } from "@/lib/ratelimit";
 

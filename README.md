@@ -4,7 +4,7 @@
 
 Settle is an AI settlement agent for independent concerts. It reads the deal memo, reconciles PayPal ticket orders, applies every deal in tested code, explains each payout in plain English, and pays every act and crew member in one PayPal Payouts batch, inside guardrails a promoter controls.
 
-- Live demo: https://settle-simo-js.vercel.app (see "Demo modes" below)
+- Live demo: https://settle-eight-khaki.vercel.app (open /show; see "Demo modes" below)
 - Built for the PayPal AI Hackathon 2026
 
 ## The problem

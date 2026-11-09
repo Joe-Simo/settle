@@ -59,7 +59,8 @@ export async function chatJson(
   if (!llmEnabled()) throw new Error("no model key");
   if (llmResting()) throw new Error("free daily model quota used up");
   if (!takeCall()) throw new Error("demo daily model cap reached");
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  const send = () =>
+    fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -81,6 +82,8 @@ export async function chatJson(
     }),
     signal: AbortSignal.timeout(opts.timeoutMs ?? 40_000),
   });
+  let res = await send();
+  if ([502, 503, 504].includes(res.status)) res = await send();
   const text = await res.text();
   if (!res.ok) {
     if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(text)) restingUntil = nextUtcMidnight();
