@@ -59,48 +59,54 @@ export async function chatJson(
   if (!llmEnabled()) throw new Error("no model key");
   if (llmResting()) throw new Error("free daily model quota used up");
   if (!takeCall()) throw new Error("demo daily model cap reached");
-  const send = (model: string) =>
-    fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
-      "HTTP-Referer": "https://github.com/Joe-Simo/settle",
-      "X-Title": "Settle",
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.1,
-      max_tokens: opts.maxTokens ?? 4000,
-      reasoning: { effort: "low" },
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-    }),
-    signal: AbortSignal.timeout(opts.timeoutMs ?? 20_000),
-  }).catch(() => new Response("timeout", { status: 504 }));
-  // Try each model in turn on upstream errors, timeouts and per-model rate limits.
-  const models = LLM_MODELS.slice(0, 3);
-  const tried: string[] = [];
-  const attempt = async (model: string) => {
-    const t = Date.now();
-    const r = await send(model);
-    tried.push(`${model.split("/").pop()} ${r.status === 504 && Date.now() - t >= 20_000 ? "timeout" : r.status}`);
-    return r;
+  const deadline = Date.now() + (opts.timeoutMs ?? 40_000);
+  const send = async (model: string): Promise<{ status: number; text: string }> => {
+    const ms = Math.min(20_000, deadline - Date.now());
+    if (ms < 5_000) return { status: 0, text: "skipped" };
+    try {
+      const r = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://github.com/Joe-Simo/settle",
+          "X-Title": "Settle",
+        },
+        body: JSON.stringify({
+          model,
+          temperature: 0.1,
+          max_tokens: opts.maxTokens ?? 4000,
+          reasoning: { effort: "low" },
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+        }),
+        signal: AbortSignal.timeout(ms),
+      });
+      const text = await r.text();
+      // OpenRouter can answer 200 with an upstream error in the body.
+      if (r.ok && /^\s*\{\s*"error"/.test(text)) return { status: 502, text };
+      return { status: r.status, text };
+    } catch {
+      return { status: -1, text: "timeout" };
+    }
   };
-  let res = await attempt(models[0]);
-  for (const next of models.slice(1)) {
-    if (![404, 429, 502, 503, 504].includes(res.status)) break;
-    if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(await res.clone().text())) break;
-    res = await attempt(next);
+  // Try each model in turn on upstream errors, timeouts and per-model rate limits.
+  const tried: string[] = [];
+  let res = { status: 0, text: "" };
+  for (const model of LLM_MODELS.slice(0, 3)) {
+    res = await send(model);
+    tried.push(`${model.split("/").pop()} ${res.status === -1 ? "timeout" : res.status === 0 ? "skipped" : res.status}`);
+    if (res.status === 200) break;
+    if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(res.text)) {
+      restingUntil = nextUtcMidnight();
+      break;
+    }
   }
-  const text = await res.text();
-  if (!res.ok) {
-    if (res.status === 429 && /per-day|daily|free-models-per-day/i.test(text)) restingUntil = nextUtcMidnight();
-    throw new Error(`OpenRouter: ${tried.join(", ")}`);
-  }
+  const text = res.text;
+  if (res.status !== 200) throw new Error(`OpenRouter: ${tried.join(", ")}`);
   const data = JSON.parse(text) as { model?: string; error?: { message?: string }; choices?: { message?: { content?: string | null } }[] };
   if (data.error) throw new Error(`OpenRouter error: ${data.error.message ?? "unknown"}`);
   const raw = (data.choices?.[0]?.message?.content ?? "").replace(/<think>[\s\S]*?<\/think>/g, "");
