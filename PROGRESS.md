@@ -22,4 +22,5 @@
 - [done 3:10 PM] Capture of live site: /workspace/video-pipeline/settle/capture/app.mp4 (151 s, 1920x1080, marks in capture/marks.json). PayPal MOCK; AI fell back to rules/templates during this capture (narration says so).
 - [done 3:40 PM] Narration: settle/script.json + settle/vo/s00..s11.wav (Piper ljspeech, 158 s total).
 - [done 3:42 PM] Composition rtest/src/Settle.tsx (id Settle, 4756 frames), assets in rtest/public/settle.
-- [in progress] Render: settle/render-chunks.sh (chunked, resumable; skips finished chunks in settle/chunks).
+- [blocked 4:40 PM] Remotion render: under load 160 to 250 Chrome could not even start (25 s browser connect timeout); 40 min produced no chunk. Remotion composition kept for a later re-render (cd rtest; N=4756 CONC=1 bash ../settle/render-chunks.sh).
+- [in progress 4:50 PM] Fallback render with ffmpeg only (no browser), same layout, captions and synthetic voice label: settle/build_ff.py renders one file per segment into settle/ff/ (re-run skips finished segments), then concat to submission/settle-demo.mp4.
