@@ -53,3 +53,4 @@ node_modules/
 .vercel/
 .env*
 !.env.example
+submission/*.mp4
