@@ -42,7 +42,8 @@ export const Act = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   billing: z.enum(["headliner", "support", "opener"]),
-  email,
+  /** Empty until the promoter adds it; payouts are held without a valid email. */
+  email: z.union([email, z.literal("")]),
   deal: Deal,
   merchGrossCents: cents.default(0),
   /** Exact quotes from the deal memo that back each term, keyed by term name. */
