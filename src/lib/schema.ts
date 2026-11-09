@@ -120,6 +120,7 @@ export const Show = z.object({
   barSplit: BarSplit.optional(),
   policy: Policy,
   memo: z.string().default(""),
+  orders: z.array(Order).default([]),
 });
 export type Show = z.infer<typeof Show>;
 export type ShowInput = z.input<typeof Show>;
