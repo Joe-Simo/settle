@@ -172,7 +172,7 @@ export function DealStep({ show, setShow, log }: StepProps) {
         <Card title="Guardrails for paying out">
           <div className="grid gap-3 text-sm sm:grid-cols-2">
             <label className="flex items-center justify-between gap-2 rounded-md border border-line bg-panel-2 px-3 py-2">
-              <span className="text-dim">Most anyone can be paid tonight</span>
+              <span className="text-dim">Per-payee cap</span>
               <input
                 className="w-28 rounded bg-stage px-2 py-1 text-right font-mono"
                 type="number"

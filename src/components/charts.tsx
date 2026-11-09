@@ -38,7 +38,7 @@ export function PayeeDonut({ s }: { s: Settlement }) {
     theme,
     data: s.payees.filter((p) => p.dueCents > 0).map((p) => ({ name: p.name, due: p.dueCents / 100, label: fmtShort(p.dueCents) })),
     title: { text: "Who gets paid tonight" },
-    series: [{ type: "donut", angleKey: "due", calloutLabelKey: "name", sectorLabelKey: "label", innerRadiusRatio: 0.6 }],
+    series: [{ type: "donut", angleKey: "due", legendItemKey: "name", sectorLabelKey: "label", innerRadiusRatio: 0.55, sectorLabel: { color: "#1a1614", fontWeight: "bold" } }],
   } as unknown as AgChartOptions;
   return <AgCharts options={options} style={{ height: 300 }} />;
 }

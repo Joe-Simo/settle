@@ -151,7 +151,7 @@ export function PayStep(props: StepProps & { result: SettleResult | null; stale:
       </Card>
       {batch && (
         <Card title="Payout batch" right={<span className="flex items-center gap-2 text-xs"><span className="font-mono text-dim">{batch.batchId.slice(0, 28)}</span><Pill tone={TONE[batch.status] ?? "dim"}>{batch.status}</Pill></span>}>
-          <Grid<Row> height={300} rowData={rows} columnDefs={cols} getRowId={(p) => p.data.senderItemId} />
+          <Grid<Row> height={300} rowData={rows} columnDefs={cols} getRowId={(p) => p.data.senderItemId} autoSizeStrategy={{ type: "fitGridWidth" }} />
           <div className="mt-3 flex justify-end">
             <Button variant="ghost" onClick={() => window.print()} className="no-print"><Printer size={16} /> Print settlement receipts</Button>
           </div>

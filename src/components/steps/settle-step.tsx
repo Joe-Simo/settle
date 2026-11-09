@@ -32,7 +32,7 @@ export function SettleStep(props: StepProps & { result: SettleResult | null; set
       const r = await api<SettleResult>("/api/settle", { show });
       setResult(r);
       r.trace.forEach((t) => log(`Agent ${t.step}: ${t.detail}`, t.step === "reconcile" ? "pp" : "info"));
-      setPicked(r.settlement.payees[0]?.id ?? null);
+      setPicked([...r.settlement.payees].sort((a, b) => b.dueCents - a.dueCents)[0]?.id ?? null);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -51,7 +51,7 @@ export function SettleStep(props: StepProps & { result: SettleResult | null; set
         headerName: "Result",
         field: "outcome",
         width: 120,
-        cellRenderer: (p: { value?: PayeeResult["outcome"] }) => (p.value ? <Pill tone={OUTCOME[p.value].tone}>{OUTCOME[p.value].label}</Pill> : null),
+        cellRenderer: (p: { value?: PayeeResult["outcome"]; data?: PayeeResult }) => (p.value && p.data?.id !== "total" ? <Pill tone={OUTCOME[p.value].tone}>{OUTCOME[p.value].label}</Pill> : null),
       },
       { headerName: "Earned", field: "earnedCents", width: 110, valueFormatter: (p) => fmtShort(p.value ?? 0), cellClass: "font-mono", tooltipValueGetter: (p) => p.data?.lines.map((l) => `${l.label}: ${fmtShort(l.amountCents)} (${l.formula})`).join("\n") },
       { headerName: "Bonus", field: "bonusCents", width: 95, valueFormatter: (p) => (p.value ? fmtShort(p.value) : ""), cellClass: "font-mono" },
@@ -152,7 +152,8 @@ export function SettleStep(props: StepProps & { result: SettleResult | null; set
               rowSelection={{ mode: "singleRow", checkboxes: false, enableClickSelection: true }}
               onRowClicked={(e) => e.data && e.data.id !== "total" && setPicked(e.data.id)}
               onGridReady={(e) => (gridApi.current = e.api)}
-              defaultColDef={{ filter: true, sortable: true }}
+              defaultColDef={{ filter: true, sortable: true, minWidth: 90 }}
+              autoSizeStrategy={{ type: "fitGridWidth" }}
               tooltipShowDelay={200}
             />
           </Card>
