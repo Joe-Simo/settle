@@ -17,6 +17,13 @@ describe("policy", () => {
     expect(r.senderBatchId).toMatch(/^settle-foundry-1107-[0-9a-f]{16}$/);
   });
 
+  it("gives each demo session its own sender_batch_id, stable for retries", () => {
+    const a = evaluate(s, show.policy, "x", "run-a").senderBatchId;
+    expect(evaluate(s, show.policy, "x", "run-a").senderBatchId).toBe(a);
+    expect(evaluate(s, show.policy, "x", "run-b").senderBatchId).not.toBe(a);
+    expect(a).not.toBe(evaluate(s, show.policy).senderBatchId);
+  });
+
   it("holds anyone over the per-payee cap", () => {
     const r = evaluate(s, { ...show.policy, perPayeeCapCents: 500000 });
     expect(r.held.map((h) => h.payeeId)).toContain("marlowe");

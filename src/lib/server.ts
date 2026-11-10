@@ -60,9 +60,15 @@ export async function verifyPayPalOrders(show: Show): Promise<{ show: Show; chec
   return { show: { ...show, orders }, checks };
 }
 
+const HINTS: Record<string, string> = {
+  NOT_AUTHORIZED: "This PayPal sandbox app does not have that feature turned on (developer.paypal.com, Apps and Credentials, Features).",
+  INSUFFICIENT_FUNDS: "The PayPal sandbox business account balance is too low for this batch.",
+};
+
 export function paypalErrorResponse(e: unknown) {
   if (e instanceof PayPalError) {
-    return Response.json({ error: e.message, name: e.name_, debugId: e.debugId }, { status: e.status >= 400 && e.status < 600 ? e.status : 502 });
+    const hint = HINTS[e.name_] ?? "";
+    return Response.json({ error: hint ? `${e.message} ${hint}` : e.message, name: e.name_, debugId: e.debugId }, { status: e.status >= 400 && e.status < 600 ? e.status : 502 });
   }
   return Response.json({ error: "PayPal request failed." }, { status: 502 });
 }

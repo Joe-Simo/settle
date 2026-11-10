@@ -21,6 +21,10 @@ const STEPS = [
 ] as const;
 type StepId = (typeof STEPS)[number]["id"];
 
+function newRunId(): string {
+  return `r${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
 export function Dashboard() {
   const [show, setShowState] = useState<Show>(() => demoShow());
   const [status, setStatus] = useState<Status | null>(null);
@@ -40,7 +44,9 @@ export function Dashboard() {
       if (raw) {
         const parsed = Show.safeParse(JSON.parse(raw));
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (parsed.success) setShowState(parsed.data);
+        if (parsed.success) setShowState(parsed.data.runId ? parsed.data : { ...parsed.data, runId: newRunId() });
+      } else {
+        setShowState((s) => (s.runId ? s : { ...s, runId: newRunId() }));
       }
     } catch {
       /* ignore */
@@ -75,7 +81,7 @@ export function Dashboard() {
 
   function reset() {
     localStorage.removeItem(KEY);
-    setShowState(demoShow());
+    setShowState({ ...demoShow(), runId: newRunId() });
     setResult(null);
     setBatch(null);
     setInvoice(null);

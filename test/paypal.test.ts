@@ -44,6 +44,17 @@ describe("sandbox gateway", () => {
     return { f: f as unknown as typeof fetch, calls };
   }
 
+  it("approves an order with the sandbox test card through confirm-payment-source", async () => {
+    const { f, calls } = fakeFetch({
+      "/v1/oauth2/token": { access_token: "tok", expires_in: 3600 },
+      "/confirm-payment-source": { id: "O1", status: "APPROVED", purchase_units: [{ amount: { value: "44.00" } }] },
+    });
+    const o = await sandboxGateway("id", "secret", f).approveWithTestCard("O1");
+    expect(o).toMatchObject({ id: "O1", status: "APPROVED", amountCents: 4400 });
+    expect(calls[1].url).toBe("https://api-m.sandbox.paypal.com/v2/checkout/orders/O1/confirm-payment-source");
+    expect(JSON.parse(String(calls[1].init?.body)).payment_source.card.number).toBe("4032039317984658");
+  });
+
   it("authenticates once, then creates a payout batch in PayPal's format", async () => {
     const { f, calls } = fakeFetch({
       "/v1/oauth2/token": { access_token: "tok", expires_in: 3600 },

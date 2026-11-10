@@ -33,15 +33,15 @@ export interface PolicyResult {
   senderBatchId: string;
 }
 
-export function batchIdFor(showId: string, items: PayoutItem[]): string {
+export function batchIdFor(showId: string, items: PayoutItem[], runId?: string): string {
   const h = createHash("sha256")
-    .update(JSON.stringify([showId, items.map((i) => [i.payeeId, i.receiver, i.amountCents])]))
+    .update(JSON.stringify(runId ? [showId, runId, items.map((i) => [i.payeeId, i.receiver, i.amountCents])] : [showId, items.map((i) => [i.payeeId, i.receiver, i.amountCents])]))
     .digest("hex")
     .slice(0, 16);
   return `settle-${showId}-${h}`.slice(0, 127);
 }
 
-export function evaluate(settlement: Settlement, policy: Policy, notePrefix = "Settlement"): PolicyResult {
+export function evaluate(settlement: Settlement, policy: Policy, notePrefix = "Settlement", runId?: string): PolicyResult {
   const checks: PolicyCheck[] = [];
   const payable: PayoutItem[] = [];
   const held: PolicyResult["held"] = [];
@@ -122,7 +122,7 @@ export function evaluate(settlement: Settlement, policy: Policy, notePrefix = "S
   });
 
   const blocked = checks.some((c) => !c.ok && c.severity === "block") || payable.length === 0;
-  return { checks, payable, held, totalCents, approvalsNeeded, blocked, senderBatchId: batchIdFor(settlement.showId, payable) };
+  return { checks, payable, held, totalCents, approvalsNeeded, blocked, senderBatchId: batchIdFor(settlement.showId, payable, runId) };
 }
 
 export function approvalsValid(needed: 1 | 2, approvers: string[]): { ok: boolean; reason?: string } {

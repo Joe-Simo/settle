@@ -23,6 +23,7 @@ export function Checkout({ show, setShow, status, log }: StepProps) {
   const [tierId, setTierId] = useState("adv");
   const [qty, setQty] = useState(2);
   const [msg, setMsg] = useState("");
+  const [busy, setBusy] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   const latest = useRef({ show, tierId, qty });
   useEffect(() => {
@@ -84,6 +85,21 @@ export function Checkout({ show, setShow, status, log }: StepProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status?.paypal, status?.clientId]);
 
+  async function testCardPay() {
+    setMsg("");
+    setBusy(true);
+    try {
+      const created = await api<Created>("/api/orders", { tierId, qty });
+      await api(`/api/orders/${encodeURIComponent(created.id)}/test-card`, {});
+      const c = await api<Captured>(`/api/orders/${encodeURIComponent(created.id)}/capture`, {});
+      record(c, created);
+    } catch (e) {
+      setMsg((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function mockPay() {
     setMsg("");
     try {
@@ -120,7 +136,13 @@ export function Checkout({ show, setShow, status, log }: StepProps) {
       </div>
       <div className="mt-3">
         {status?.paypal === "sandbox" ? (
-          <div ref={box} className="min-h-12" />
+          <>
+            <div ref={box} className="min-h-12" />
+            <Button variant="ghost" className="mt-2 w-full" onClick={testCardPay} disabled={busy}>
+              {busy ? "Paying in the PayPal sandbox..." : "Pay with a PayPal sandbox test card"}
+            </Button>
+            <p className="mt-1 text-xs text-dim">No sandbox login? This button pays with PayPal&apos;s public sandbox test Visa. Same order, same server capture.</p>
+          </>
         ) : (
           <Button variant="pp" className="w-full" onClick={mockPay}>Pay with PayPal (mock)</Button>
         )}

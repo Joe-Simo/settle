@@ -61,6 +61,11 @@ export function mockGateway(now: () => number = Date.now): PayPalGateway {
       const o = dec<{ a: number }>(orderId.slice("MOCK-ORD-".length));
       return { id: orderId, status: "COMPLETED", amountCents: o.a, captureId: `MOCKCAP${short(orderId)}`, payerEmail: "buyer@mock.example.com" };
     },
+    async approveWithTestCard(orderId) {
+      if (!orderId.startsWith("MOCK-ORD-")) throw new PayPalError("Order not found (mock)", 404, "RESOURCE_NOT_FOUND");
+      const o = dec<{ a: number }>(orderId.slice("MOCK-ORD-".length));
+      return { id: orderId, status: "APPROVED", amountCents: o.a };
+    },
     async getOrder(orderId) {
       return this.captureOrder(orderId);
     },

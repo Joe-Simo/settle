@@ -5,6 +5,7 @@ import { type InvoiceInfo, type OrderInfo, type PayPalGateway, type PayoutBatch,
 /** Real PayPal REST calls against the sandbox. Never used with live credentials. */
 
 const BASE = "https://api-m.sandbox.paypal.com";
+export const SANDBOX_TEST_VISA = "4032039317984658";
 
 type Json = Record<string, unknown>;
 
@@ -99,6 +100,14 @@ export function sandboxGateway(clientId: string, clientSecret: string, fetchImpl
     },
     async captureOrder(orderId) {
       return orderInfo(await call("POST", `/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, {}));
+    },
+    async approveWithTestCard(orderId) {
+      // A published PayPal sandbox test Visa. It only works against api-m.sandbox.paypal.com.
+      return orderInfo(
+        await call("POST", `/v2/checkout/orders/${encodeURIComponent(orderId)}/confirm-payment-source`, {
+          payment_source: { card: { number: SANDBOX_TEST_VISA, expiry: "2030-12", security_code: "123", name: "Sandbox Test Buyer" } },
+        }),
+      );
     },
     async getOrder(orderId) {
       return orderInfo(await call("GET", `/v2/checkout/orders/${encodeURIComponent(orderId)}`));

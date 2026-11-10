@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const approvers = Array.isArray(input.body.approvers) ? input.body.approvers.map(String).slice(0, 4) : [];
   const { show } = await verifyPayPalOrders(input.show);
   const settlement = settle(show);
-  const policy = evaluate(settlement, show.policy, show.name);
+  const policy = evaluate(settlement, show.policy, show.name, show.runId);
   if (policy.blocked) {
     return Response.json({ error: "Policy blocked this payout.", checks: policy.checks.filter((c) => !c.ok) }, { status: 409 });
   }

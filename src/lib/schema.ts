@@ -122,6 +122,8 @@ export const Show = z.object({
   policy: Policy,
   memo: z.string().default(""),
   orders: z.array(Order).default([]),
+  /** One id per demo session, so retries reuse a sender_batch_id but a new visitor gets a new one. */
+  runId: z.string().regex(/^[A-Za-z0-9-]{4,40}$/).optional(),
 });
 export type Show = z.infer<typeof Show>;
 export type ShowInput = z.input<typeof Show>;

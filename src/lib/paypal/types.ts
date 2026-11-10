@@ -53,6 +53,8 @@ export interface PayPalGateway {
   mode: PayPalMode;
   createOrder(input: { amountCents: Cents; description: string; referenceId: string }): Promise<OrderInfo>;
   captureOrder(orderId: string): Promise<OrderInfo>;
+  /** Sandbox only: approve an order with a PayPal sandbox test card, so a visitor can pay without a sandbox login. */
+  approveWithTestCard(orderId: string): Promise<OrderInfo>;
   getOrder(orderId: string): Promise<OrderInfo>;
   createPayoutBatch(input: { senderBatchId: string; subject: string; message: string; items: PayoutItemInput[] }): Promise<PayoutBatch>;
   getPayoutBatch(batchId: string): Promise<PayoutBatch>;
