@@ -19,7 +19,7 @@ An AI settlement agent for small concerts: it reads the deal memo, reconciles Pa
 The repository is public, open source under the MIT license (LICENSE file, also shown in the GitHub About section), and includes setup and run instructions in the README so judges can run it locally.
 
 ## Video demo link
-YOUTUBE_URL
+https://youtu.be/aX1JNZDK3RQ
 
 The local file is /workspace/hackathons/settle/submission/settle-demo.mp4 (2 minutes 43 seconds, under the 3-minute limit). Upload it to the connected YouTube channel as Public before submitting, then paste the public URL here. The video shows the project running in the browser on the PayPal sandbox (ticket capture, the full 6-payee Payouts batch reaching SUCCESS, the bar invoice SENT and a refund), uses a synthetic Piper voice disclosed on screen, and has no copyrighted music.
 
@@ -127,7 +127,7 @@ AG Charts Community features, all in src/components/charts.tsx, using AllCommuni
 
 ## Submit-time checklist
 - [ ] Confirm the Devpost dashboard has no existing Settle submission (do not double-submit).
-- [ ] Upload settle-demo.mp4 to YouTube as Public, then replace YOUTUBE_URL.
+- [ ] Upload settle-demo.mp4 to YouTube as Public, then replace https://youtu.be/aX1JNZDK3RQ.
 - [ ] Attach live screenshots from /workspace/hackathons/settle-shots/.
 - [ ] Re-check https://settle-eight-khaki.vercel.app/api/status shows "paypal":"sandbox" before pasting.
 - [x] Sandbox business balance covers the demo: on Nov 10 at 10:05 AM the full 6-payee batch L57FLYNK3AL3Q ($7,518.20) reached SUCCESS. Sandbox business account balance is $100,000.
