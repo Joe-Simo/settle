@@ -58,7 +58,7 @@ Settle uses **AG Grid Community** and **AG Charts Community** (MIT), no enterpri
 
 ## Demo modes
 
-- **PayPal sandbox** when `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` are set: real sandbox orders, payouts, invoices and refunds. The hosted demo runs in this mode. Besides the Smart Buttons, the ticket card has "Pay with a PayPal sandbox test card", which approves the order server side with PayPal's public sandbox test Visa (Orders `confirm-payment-source`) and then captures it, so you can buy without a sandbox login. Each demo session sends its own `sender_batch_id`, so retries cannot pay twice and each visitor can still pay.
+- **PayPal sandbox** when `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` are set: real sandbox orders, payouts, invoices and refunds. The hosted demo runs in this mode. Besides the Smart Buttons, the ticket card has "Pay with a PayPal sandbox test card", which approves the order server side with PayPal's public sandbox test Visa (Orders `confirm-payment-source`) and then captures it, so you can buy without a sandbox login. Each demo session sends its own `sender_batch_id`, so retries cannot pay twice and each visitor can still pay. On Nov 10, 2026 the hosted demo ran the whole flow on the sandbox: ticket capture, reconciliation, the full 6-payee Payouts batch (SUCCESS) and the bar invoice (SENT).
 - **Mock PayPal** otherwise: a stateless adapter with the same interface and PayPal's status names. The header and every payment card say "MOCK PayPal" so nobody mistakes it for the sandbox.
 - The demo show, its people and the advance ticket crowd are invented. The advance crowd is labeled "Simulated" in every grid and chart; door sales are labeled "Box office". Payee emails use `example.com`; in the sandbox, payouts to addresses without a sandbox account show as UNCLAIMED, which the grid displays. Replace them with your sandbox personal account emails in the Deal and Night of grids to see SUCCESS.
 
@@ -72,7 +72,7 @@ pnpm test                    # Vitest
 pnpm typecheck && pnpm lint && pnpm build
 ```
 
-PayPal sandbox setup: sign in at https://developer.paypal.com, open Apps & Credentials, Sandbox, create a REST app (Payouts and Invoicing enabled on the app), and copy the client id and secret. Use the default sandbox business account as the payer of payouts (it needs a sandbox balance), and a sandbox personal account to buy tickets.
+PayPal sandbox setup: sign in at https://developer.paypal.com, open Apps & Credentials, Sandbox, create a REST app (Payouts and Invoicing enabled on the app), and copy the client id and secret. Use the default sandbox business account as the payer of payouts (give it a large sandbox balance, such as $100,000, because each full demo batch is about $7,500), and a sandbox personal account to buy tickets.
 
 ## Architecture
 

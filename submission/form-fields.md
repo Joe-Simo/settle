@@ -4,7 +4,7 @@ Paste these fields on https://paypalaihackathon.devpost.com (Enter a Submission)
 
 Items in [brackets] or marked PLACEHOLDER are filled at submit time. This draft matches the required submission materials: project name, text description, functional demo URL, public open-source repository with a visible MIT license, built-with and AI tools disclosure, AG Grid sponsor notes, testing instructions, and a public YouTube demo under 3 minutes.
 
-Current PayPal mode (as of Nov 10, 2026): the live demo runs against the real PayPal sandbox (api-m.sandbox.paypal.com). /api/status reports paypal: sandbox. Two settings on the PayPal developer dashboard still need to be done before submitting, listed in the submit-time checklist: a larger sandbox business balance (the full demo batch is $7,483) and the Invoicing feature on the sandbox app.
+Current PayPal mode (as of Nov 10, 2026): the live demo runs against the real PayPal sandbox (api-m.sandbox.paypal.com). /api/status reports paypal: sandbox. The full 6-payee Payouts batch and the bar invoice both pass on the hosted demo.
 
 ## Project name
 Settle
@@ -50,7 +50,7 @@ Settle runs the whole night in four steps.
 
 4. **Pay.** The agent proposes a plan with three tools: pay_batch, hold and send_invoice. Guardrails check it: it can only pay people the policy allows and it never sets an amount. Server policy checks run again (per-payee cap, duplicate email, funds collected, two different approvers above a threshold). Then one PayPal Payouts batch pays everyone with an idempotent sender_batch_id, and each payout status streams into the grid. The promoter's share of the bar goes to the venue as a PayPal invoice.
 
-The hosted demo at https://settle-eight-khaki.vercel.app/show talks to the real PayPal sandbox (api-m.sandbox.paypal.com). The header reads "PayPal: sandbox" and the payment cards read "PayPal sandbox". Ticket checkout, capture, refunds, settlement reconciliation, the Payouts batch and the bar invoice are live sandbox API calls. Example sandbox IDs from the Nov 10 live run: order 76D72480VJ002074T (captured, 44.00 USD), refund 9CT07650NX755414K (COMPLETED), payout batch KDMAVL9YCW47U (PENDING, then PROCESSING, then SUCCESS). A labeled mock adapter stays in the repo for running without credentials.
+The hosted demo at https://settle-eight-khaki.vercel.app/show talks to the real PayPal sandbox (api-m.sandbox.paypal.com). The header reads "PayPal: sandbox" and the payment cards read "PayPal sandbox". Ticket checkout, capture, refunds, settlement reconciliation, the Payouts batch and the bar invoice are live sandbox API calls. Example sandbox IDs from the Nov 10 live run: order 67L68776MJ636371N (captured, 44.00 USD, capture 0LB826348A599921B), refund 7EC40341M4174954S (COMPLETED), the full 6-payee payout batch L57FLYNK3AL3Q ($7,518.20, PENDING, then SUCCESS) and bar invoice INV2-B2AU-UBU4-U8LX-27X2 ($240, SENT). A labeled mock adapter stays in the repo for running without credentials.
 
 ### How we built it
 - **PayPal:** Orders v2 (create, capture, get for reconciliation), Payouts v1 (create batch, get batch), Invoicing v2 (create, send, get), Payments v2 refunds, OAuth client credentials, and the PayPal JS SDK for checkout. Orders confirm-payment-source approves a ticket with the sandbox test Visa. All calls target api-m.sandbox.paypal.com and the hosted demo uses them. Live PayPal is never used. One adapter interface has the sandbox implementation and a labeled mock for running without credentials.
@@ -130,7 +130,7 @@ AG Charts Community features, all in src/components/charts.tsx, using AllCommuni
 - [ ] Upload settle-demo.mp4 to YouTube as Public, then replace YOUTUBE_URL.
 - [ ] Attach live screenshots from /workspace/hackathons/settle-shots/.
 - [ ] Re-check https://settle-eight-khaki.vercel.app/api/status shows "paypal":"sandbox" before pasting.
-- [ ] Sandbox business balance covers the demo: run the full demo through step 4 once (a 6-payee batch of $7,483). On Nov 10 it returned INSUFFICIENT_FUNDS; the balance of sandbox business account sb-g8vjo53819931@business.example.com must be raised on the PayPal developer dashboard (Sandbox accounts, edit, PayPal balance), ideally to $100,000 or more so several judges can pay.
-- [ ] Invoicing feature turned on for the sandbox REST app (developer.paypal.com, Apps & Credentials, the app, Features). On Nov 10 the invoice call returned 403 NOT_AUTHORIZED. If it is still off at submit time, delete "and the bar invoice" from the sandbox sentences in "What it does" and "Testing instructions" and add: "The bar invoice uses the Invoicing v2 API; on the hosted sandbox app the Invoicing feature was not enabled at submit time, so that button shows PayPal's NOT_AUTHORIZED message."
+- [x] Sandbox business balance covers the demo: on Nov 10 at 10:05 AM the full 6-payee batch L57FLYNK3AL3Q ($7,518.20) reached SUCCESS. Sandbox business account balance is $100,000.
+- [x] Invoicing feature turned on for the sandbox REST app: on Nov 10 at 10:05 AM bar invoice INV2-B2AU-UBU4-U8LX-27X2 was SENT.
 - [ ] Select AG Grid as a sponsor tool.
 - [ ] Recheck that https://github.com/Joe-Simo/settle is public and shows the MIT license in About.

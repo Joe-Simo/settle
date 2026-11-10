@@ -27,14 +27,14 @@
   - full demo batch (6 payees, $7,483): 422 INSUFFICIENT_FUNDS
   - invoice: 403 NOT_AUTHORIZED (the sandbox REST app token has no invoicing scope)
 - Nov 10 9:35 AM: tried to raise the sandbox balance with a $40,000 sandbox test-card capture (order 0FG58674U24881214, capture 2W7984911R603554W, net 38,963.51, sandbox money only) plus a tracking record. Payouts still say INSUFFICIENT_FUNDS, so PayPal keeps those funds unavailable. Probe batches BSDZJXHWECMBS ($1), DRURUHGSF2CQ8 ($50), 2AU7CFZ37CZPG ($500) went through; $3,000 did not.
+- Nov 10 10:00 AM: Joe raised the sandbox business balance (sb-g8vjo53819931@business.example.com) to $100,000 and turned on Invoicing for the sandbox app "Settle Hackathon Demo".
+- Nov 10 10:05 AM live sandbox E2E (settle-e2e/e2e.ts, all pass) on https://settle-eight-khaki.vercel.app: extract 200 (rules, the free model timed out from Vercel); order 67L68776MJ636371N, capture before approval 422 ORDER_NOT_APPROVED, test-card APPROVED, capture COMPLETED 44.00 USD (0LB826348A599921B); settle reconciled it and dropped fake order 5O190127TN364715T; one approver 403; full 6-payee batch L57FLYNK3AL3Q $7,518.20 PENDING then SUCCESS (items UNCLAIMED, example.com receivers); bar invoice INV2-B2AU-UBU4-U8LX-27X2 SENT $240; refund 7EC40341M4174954S COMPLETED; bad show 400. 45 tests pass.
 - Nov 10 9:45 AM: submission/form-fields.md rewritten for real sandbox mode (mock caveat and swap-in section removed, sandbox IDs added, two dashboard prerequisites in the checklist). draft-check PASS. README notes the test-card button and per-session batch ids.
 
 ## Next
-- Demo video (Remotion + Piper) from a live capture, mp4 to submission/. Then final report.
+- Re-capture the demo video in sandbox mode (successful payout and invoice), then upload and submit.
 
 ## Blockers
-- Joe-only (PayPal developer dashboard sign-in): (1) raise the PayPal balance of sandbox business account sb-g8vjo53819931@business.example.com (Sandbox accounts, edit) to $100,000 or more, since each full demo batch is $7,483; (2) turn on Invoicing for the sandbox REST app (Apps & Credentials, the app, Features). Until then the full step 4 batch returns INSUFFICIENT_FUNDS and the bar invoice returns NOT_AUTHORIZED on the hosted demo.
-- Video re-capture in sandbox waits on (1): a capture now would show the step 4 error. Run it after the balance is raised.
 - OpenRouter free models are slow or time out from Vercel at times; app falls back to rule parser, template notes and rule plan, and labels it.
 - Dependabot: 1 moderate (minimatch, dev only).
 
