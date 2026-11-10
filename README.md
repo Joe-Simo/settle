@@ -58,7 +58,7 @@ Settle uses **AG Grid Community** and **AG Charts Community** (MIT), no enterpri
 
 ## Demo modes
 
-- **PayPal sandbox** when `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` are set: real sandbox orders, payouts, invoices and refunds.
+- **PayPal sandbox** when `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` are set: real sandbox orders, payouts, invoices and refunds. The hosted demo runs in this mode. Besides the Smart Buttons, the ticket card has "Pay with a PayPal sandbox test card", which approves the order server side with PayPal's public sandbox test Visa (Orders `confirm-payment-source`) and then captures it, so you can buy without a sandbox login. Each demo session sends its own `sender_batch_id`, so retries cannot pay twice and each visitor can still pay.
 - **Mock PayPal** otherwise: a stateless adapter with the same interface and PayPal's status names. The header and every payment card say "MOCK PayPal" so nobody mistakes it for the sandbox.
 - The demo show, its people and the advance ticket crowd are invented. The advance crowd is labeled "Simulated" in every grid and chart; door sales are labeled "Box office". Payee emails use `example.com`; in the sandbox, payouts to addresses without a sandbox account show as UNCLAIMED, which the grid displays. Replace them with your sandbox personal account emails in the Deal and Night of grids to see SUCCESS.
 
