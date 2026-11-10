@@ -32,7 +32,7 @@
 - Nov 10 9:45 AM: submission/form-fields.md rewritten for real sandbox mode (mock caveat and swap-in section removed, sandbox IDs added, two dashboard prerequisites in the checklist). draft-check PASS. README notes the test-card button and per-session batch ids.
 
 ## Next
-- Re-capture the demo video in sandbox mode (successful payout and invoice), then upload and submit.
+- Upload submission/settle-demo.mp4 to YouTube as Public, paste the URL, submit on Devpost.
 
 ## Blockers
 - OpenRouter free models are slow or time out from Vercel at times; app falls back to rule parser, template notes and rule plan, and labels it.
@@ -46,3 +46,4 @@
 - [in progress 4:50 PM] Fallback render with ffmpeg only (no browser), same layout, captions and synthetic voice label: settle/build_ff.py renders one file per segment into settle/ff/ (re-run skips finished segments), then concat to submission/settle-demo.mp4.
 - [done 5:51 PM] Final video: submission/settle-demo.mp4 (2:38.6, 1920x1080 h264 + AAC, 10.5 MB), concat of settle/ff/s00..s11 rendered with ffmpeg (build_ff.py). Synthetic voice label on every scene, captions, no music, sample data note. Gitignored and not uploaded anywhere (brief: do not upload).
 - Video caveat: captured while PayPal was MOCK and the free AI models had fallen back; narration says both. Re-capture after sandbox keys land: node settle/capture.cjs, update clip times in settle/script.src.json from capture/marks.json, python3 tts.py if text changes, rm settle/ff/*.mp4, python3 build_ff.py, then concat (settle/ff/list.txt).
+- [done Nov 10 10:20 AM] Sandbox re-capture: node capture.cjs (playwright-core now from /workspace/wix/pickup-slots, the old path was cleaned up), capture/app.mp4 223 s with order captured, batch 9GCH8WS6XBV6Y SUCCESS (6 payees, $7,518.20), invoice 0002 SENT, refund. New text and Piper TTS for s02, s03, s09, s10; clip times remapped from marks.json; end card and opening note say PayPal sandbox. ffmpeg build_ff.py + concat: submission/settle-demo.mp4 2:42.8, 1920x1080 h264 + AAC, full decode clean. Old mock cut kept as submission/settle-demo-mock.mp4; mock-era assets in video-pipeline/settle/mock-backup/. Extraction and notes still used the rule fallback in this take (the free model timed out); narration says so.

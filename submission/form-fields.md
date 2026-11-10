@@ -21,7 +21,7 @@ The repository is public, open source under the MIT license (LICENSE file, also 
 ## Video demo link
 YOUTUBE_URL
 
-The local file is /workspace/hackathons/settle/submission/settle-demo.mp4 (2 minutes 38 seconds, under the 3-minute limit). Upload it to the connected YouTube channel as Public before submitting, then paste the public URL here. The video shows the project running in the browser, uses a synthetic Piper voice disclosed on screen, and has no copyrighted music.
+The local file is /workspace/hackathons/settle/submission/settle-demo.mp4 (2 minutes 43 seconds, under the 3-minute limit). Upload it to the connected YouTube channel as Public before submitting, then paste the public URL here. The video shows the project running in the browser on the PayPal sandbox (ticket capture, the full 6-payee Payouts batch reaching SUCCESS, the bar invoice SENT and a refund), uses a synthetic Piper voice disclosed on screen, and has no copyrighted music.
 
 ## Images (upload on the form)
 Use the live screenshots in /workspace/hackathons/settle-shots/ (live-01-landing.png through live-08-mobile-settle.png). These files are not in the GitHub repo; attach them on Devpost at submit time.
