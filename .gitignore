@@ -54,3 +54,4 @@ node_modules/
 .env*
 !.env.example
 submission/*.mp4
+run-*.json
